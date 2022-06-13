@@ -8,8 +8,7 @@ const notion = new Client({
 
 const database_id = process.env.NOTION_DATABASE_ID
 
-module.exports = async function getDatebaseItems() {
-  // TODO: add payload dynamic
+const getDatebaseItemsByFilter = async function getDatebaseItemsByFilter(filter) {
   const payload = {
     path: `databases/${database_id}/query`,
     method: 'POST',
@@ -17,7 +16,7 @@ module.exports = async function getDatebaseItems() {
       "filter": {
         "property": "Tags",
         "multi_select": {
-          "contains": "angular"
+          "contains": filter
         }
       }
     }
@@ -29,8 +28,50 @@ module.exports = async function getDatebaseItems() {
     name: el.properties.Name.title[0].plain_text,
     description: el.properties?.['additional comment'].rich_text[0]?.plain_text,
     progress: el.properties.done.checkbox,
-    url: el.properties.link.url
+    url: el.properties.link?.url
   }))
 
   return data
+}
+
+const getDatebaseFilters = async function getDatebaseFilters() {
+  const payload = {
+    path: `databases/${database_id}/query`,
+    method: 'POST'
+  }
+
+  const { results } = await notion.request(payload)
+
+  const allDatabaseTags = results.reduce((prev, curr) => {
+    const elTagsNames = curr.properties.Tags.multi_select.map(({ name }) => name)
+    return [...prev, ...elTagsNames]
+  }, [])
+
+  const uniqueDatabaseTags = [...new Set(allDatabaseTags)]
+
+  return uniqueDatabaseTags
+}
+
+const getAllItems = async function getAllItems() {
+  const payload = {
+    path: `databases/${database_id}/query`,
+    method: 'POST'
+  }
+
+  const { results } = await notion.request(payload)
+
+  const data = results.map(el => ({
+    name: el.properties.Name.title[0].plain_text,
+    description: el.properties?.['additional comment'].rich_text[0]?.plain_text,
+    progress: el.properties.done.checkbox,
+    url: el.properties.link?.url
+  }))
+
+  return data
+}
+
+module.exports = {
+  getDatebaseItemsByFilter,
+  getDatebaseFilters,
+  getAllItems
 }
