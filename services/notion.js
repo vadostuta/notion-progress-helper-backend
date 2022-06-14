@@ -1,16 +1,18 @@
 const dotenv = require('dotenv').config()
 const { Client } = require('@notionhq/client')
 
-// Init client
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-})
+/**
+ * I think It's dumb initialize every time notion client,
+ * but right now I don't better way
+ */
 
-const database_id = process.env.NOTION_DATABASE_ID
+const getDatebaseItemsByFilter = async function getDatebaseItemsByFilter(filter, query) {
+  const notion = new Client({
+    auth: query.integrationKey
+  })
 
-const getDatebaseItemsByFilter = async function getDatebaseItemsByFilter(filter) {
   const payload = {
-    path: `databases/${database_id}/query`,
+    path: `databases/${query.databaseId}/query`,
     method: 'POST',
     body: {
       "filter": {
@@ -34,9 +36,13 @@ const getDatebaseItemsByFilter = async function getDatebaseItemsByFilter(filter)
   return data
 }
 
-const getDatebaseFilters = async function getDatebaseFilters() {
+const getDatebaseFilters = async function getDatebaseFilters(query) {
+  const notion = new Client({
+    auth: query.integrationKey
+  })
+
   const payload = {
-    path: `databases/${database_id}/query`,
+    path: `databases/${query.databaseId}/query`,
     method: 'POST'
   }
 
@@ -52,9 +58,13 @@ const getDatebaseFilters = async function getDatebaseFilters() {
   return uniqueDatabaseTags
 }
 
-const getAllItems = async function getAllItems() {
+const getAllItems = async function getAllItems(query) {
+  const notion = new Client({
+    auth: query.integrationKey
+  })
+
   const payload = {
-    path: `databases/${database_id}/query`,
+    path: `databases/${query.databaseId}/query`,
     method: 'POST'
   }
 

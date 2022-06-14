@@ -7,18 +7,18 @@ const app = express()
 app.use(cors());
 
 app.get('/getFilters', async (req, res) => {
-  const filters = await getDatebaseFilters()
+  const filters = await getDatebaseFilters(req.query)
   res.json(filters)
 })
 
 app.get('/getItemsByTag/:filter', async (req, res) => {
   const { filter } = req.params
-  const items = await getDatebaseItemsByFilter(filter)
+  const items = await getDatebaseItemsByFilter(filter, req.query)
   res.json(items)
 })
 
 app.get('/getAllItems', async (req, res) => {
-  const items = await getAllItems()
+  const items = await getAllItems(req.query)
   res.json(items)
 })
 
