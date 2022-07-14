@@ -1,2 +1,2 @@
 # notion-progress-helper-backend
-backend for notion-progress-helper
+Frontend link: https://nphelper.netlify.app/ https://github.com/vadostuta/notion-progress-helper
